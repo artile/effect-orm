@@ -1,0 +1,31 @@
+question = "Can effect-orm execute the WhatsNewAck pilot on SQLite/D1 and match Drizzle?"
+verdict = "feasible"
+upstream_commit = "c5fa679054d94583a38bb389f91e6b1c3b6390ae"
+run = "mise exec -- bun run prototype:whats-new-ack"
+runtime = "Miniflare local D1 (workerd), not a deployed Cloudflare database"
+effect_version = "4.0.0"
+drizzle_version = "1.0.0-rc.5"
+core_changes = false
+
+[parity]
+copy = "pass"
+first_write_wins = "pass"
+by_user = "pass"
+keyset_page = "pass"
+
+[guards]
+row_schema_decode = "pass: typed CompiledQueryDecodeError"
+tenant_scope = "pass: opt-in requireTenantScope refuses unscoped queries before execution"
+interactive_transaction = "pass: TransactionUnsupported, no transaction body runs"
+
+[comparison]
+both = "Effect SQL drivers, Effect results, Layers and parameter binding"
+effect_orm = "Derived runtime row decoding and opt-in compiled-query tenant analysis"
+drizzle = "Existing SQLite schema/migration tooling and D1 integration"
+app_fit = "No app ORM change: the Alchemy schema/migration resource still requires Drizzle"
+
+[limits]
+performance = "Not benchmarked"
+migrations = "Pilot uses scratch DDL; no SQLite schema diff/introspection implementation"
+batch = "No effect-orm batch API; D1 batch is not an interactive transaction"
+production = "Not deployed; no application database or flags changed"
